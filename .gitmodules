@@ -1,0 +1,3 @@
+[submodule "air_qualliry_regressor_prepocess"]
+	path = air_qualliry_regressor_prepocess
+	url = https://github.com/VakeDomen/air_qualliry_regressor_prepocess.git
