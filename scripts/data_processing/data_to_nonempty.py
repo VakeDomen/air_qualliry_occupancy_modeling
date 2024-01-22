@@ -32,11 +32,11 @@ args = parser.parse_args()
 
 folder_path = f"../../data/{args.dataset_name}/fold_{args.fold_number}"
 
-
-def extract_nonzero_class_rows(folder_path, file_name):
+def extract_nonzero_class_groups(folder_path, file_name):
     """
-    Read the CSV file from the given folder and extract rows where the last column (class) is not 0.
-    Save the extracted rows into a new CSV file in the same folder.
+    Read the CSV file from the given folder and keep groups of rows where the last row 
+    of each group (based on the first column as the ID) has a non-zero value in the last column.
+    Save the resulting DataFrame back to the same folder.
 
     Parameters:
     - folder_path: str, path to the folder containing the CSV file
@@ -48,23 +48,28 @@ def extract_nonzero_class_rows(folder_path, file_name):
     # Read the CSV into a DataFrame
     df = pd.read_csv(csv_path)
 
-    # Get the name of the last column
+    # Get the name of the first column (ID) and the last column (class)
+    id_column = df.columns[0]
     class_column = df.columns[-1]
 
-    # Extract rows where the class is not 0
-    df_nonzero_class = df[df[class_column] != 0]
+    # Group by the ID column and filter groups
+    grouped = df.groupby(id_column)
+    filtered_groups = [group for _, group in grouped if group[class_column].iloc[-1] != 0]
 
-    # Save the extracted DataFrame back to CSV
-    new_file_name = f"nonempty_class_{file_name}"
+    # Concatenate the filtered groups into a new DataFrame
+    filtered_df = pd.concat(filtered_groups, ignore_index=True)
+
+    # Save the filtered DataFrame back to CSV
+    new_file_name = f"filtered_{file_name}"
     modified_csv_path = os.path.join(folder_path, new_file_name)
-    df_nonzero_class.to_csv(modified_csv_path, index=False)
-    print(f"Extracted rows with nonzero class from {file_name} and saved as {modified_csv_path}")
+    filtered_df.to_csv(modified_csv_path, index=False)
+    print(f"Extracted rows with nonzero class in the last row of groups from {file_name} and saved as {modified_csv_path}")
 
 # Check if the folder exists
 
 if os.path.exists(folder_path):
     # Modify 'train.csv' and 'test.csv'
     for file_name in tqdm(files):
-        extract_nonzero_class_rows(folder_path, file_name)
+        extract_nonzero_class_groups(folder_path, file_name)
 else:
     print("The specified folder does not exist.")

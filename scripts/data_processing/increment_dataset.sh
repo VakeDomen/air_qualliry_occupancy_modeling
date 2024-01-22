@@ -2,7 +2,7 @@
 
 source_dir="../../air_qualliry_regressor_prepocess/out" # where data is initialy found/geneated
 data_dir="../../data"
-models_dir="../../models/builders/"
+models_dir="../../models"
 
 # Check if the source directory exists and has folders in it
 if [ -d "$source_dir" ] && [ "$(ls -A $source_dir)" ]; then
@@ -27,11 +27,14 @@ if [ -d "$source_dir" ] && [ "$(ls -A $source_dir)" ]; then
     mv ${source_dir}/* "${new_dataset_dir}/"
 
     # Create corresponding folders in models/single and models/dual
-    mkdir -p ${models_dir}/${x}_${dataset_name}
+    mkdir -p ${models_dir}/builders/${x}_${dataset_name}
+    mkdir -p ${models_dir}/out/${x}_${dataset_name}
+    mkdir -p ${models_dir}/out/${x}_${dataset_name}/single
+    mkdir -p ${models_dir}/out/${x}_${dataset_name}/dual
 
     # create modeling base folders and files
-    cp -r ${models_dir}/0_base/single ${models_dir}/${x}_${dataset_name}/
-    cp -r ${models_dir}/0_base/dual ${models_dir}/${x}_${dataset_name}/
+    cp -r ${models_dir}/builders/0_base/single ${models_dir}/builders/${x}_${dataset_name}/
+    cp -r ${models_dir}/builders/0_base/dual ${models_dir}/builders/${x}_${dataset_name}/
     echo ${x}_${dataset_name} > ${models_dir}/${x}_${dataset_name}/dataset_name.txt
 
     echo "Folders moved to ${new_dataset_dir} and corresponding model directories created."
