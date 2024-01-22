@@ -1,16 +1,18 @@
-# This script is designed to read CSV files and convert the last column into a binary 
-# format where non-zero values are set to 1 and zero values remain 0.
-# The primary purpose is to prepare datasets for analyses that require binary variables, 
-# such as logistic regression or other binary classification algorithms.
+# This script is designed to process CSV files by extracting rows where the last column 
+# (assumed to be the class) is not zero. This functionality is particularly useful for 
+# datasets where classes are numerically labeled and there is a need to focus on non-zero 
+# classes, such as in certain types of classification tasks or data analyses.
 # The script operates by reading an existing CSV file from a specified folder, 
-# modifying the last column to be binary, and then saving the modified version back to 
-# the same folder with a new name to preserve the original data.
-# It's especially useful for preprocessing large datasets efficiently and ensures data 
-# integrity by not overwriting original files.
-# The script is flexible and can be used on multiple files within a directory, as 
-# demonstrated with 'train.csv' and 'test.csv'.
+# filtering out rows where the class is not 0, and then saving the extracted rows 
+# into a new file in the same folder. This approach is useful for preprocessing datasets 
+# where classes of interest are represented by non-zero values.
+# By saving the extracted data in a new file, the script ensures the original data remains 
+# unaltered, maintaining data integrity. This feature is important when working with raw 
+# datasets that may need to be accessed in their original form for other analyses.
+# The script is flexible and can be applied to various CSV files within a directory, 
+# allowing for batch processing of datasets, as demonstrated with 'train.csv' and 'test.csv'.
 #
-# GENERATES: nonempty_class_<data name>.csv
+# GENERATES: nonzero_class_<data name>.csv
 #
 
 import pandas as pd
