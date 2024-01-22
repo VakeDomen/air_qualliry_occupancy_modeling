@@ -1,11 +1,8 @@
 #!/bin/bash
 
-# Define the source and destination directories
-
-source_dir="../../air_qualliry_regressor_prepocess/out"
+source_dir="../../air_qualliry_regressor_prepocess/out" # where data is initialy found/geneated
 data_dir="../../data"
-models_single_dir="../../models/builders/single"
-models_dual_dir="../../models/builders/dual"
+models_dir="../../models/builders/"
 
 # Check if the source directory exists and has folders in it
 if [ -d "$source_dir" ] && [ "$(ls -A $source_dir)" ]; then
@@ -30,18 +27,27 @@ if [ -d "$source_dir" ] && [ "$(ls -A $source_dir)" ]; then
     mv ${source_dir}/* "${new_dataset_dir}/"
 
     # Create corresponding folders in models/single and models/dual
-    mkdir -p "${models_single_dir}/${x}_${dataset_name}"
-    mkdir -p "${models_dual_dir}/${x}_${dataset_name}"
+    mkdir -p ${models_dir}/${x}_${dataset_name}
+
+    # create modeling base folders and files
+    cp -r ${models_dir}/0_base/single ${models_dir}/${x}_${dataset_name}/
+    cp -r ${models_dir}/0_base/dual ${models_dir}/${x}_${dataset_name}/
+    echo ${x}_${dataset_name} > ${models_dir}/${x}_${dataset_name}/dataset_name.txt
 
     echo "Folders moved to ${new_dataset_dir} and corresponding model directories created."
-
-    echo "Summarizing dataset..."
-    python analize_dataset.py ${x}_${dataset_name} 1
-
-    mv charts ../../data/${x}_${dataset_name}
-
+   
+    # build the binary dataset for the dual model classifier
     echo "Building binary datset version..."
     python data_to_binary.py ${x}_${dataset_name} 1
+
+    # create the regressor dataset for the dual model regressor
+    echo "Building dataset for dual model - regressor..."
+    python data_to_nonempty.py ${x}_${dataset_name} 1
+
+    # summarisation creates some .md and charts of the dataset
+    echo "Summarizing core dataset..."
+    python analize_dataset.py ${x}_${dataset_name} 1
+    mv charts ../../data/${x}_${dataset_name}
 
     echo "Done!"
 else
